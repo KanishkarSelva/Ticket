@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <script>
+        function login() {
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+
+            google.script.run.withSuccessHandler(function(response) {
+                if (response.status === "success") {
+                    sessionStorage.setItem("userEmail", response.email); // Store email
+                    window.location.href = "tickets.html"; // Redirect to tickets page
+                } else {
+                    alert(response.message);
+                }
+            }).loginUser(email, password);
+        }
+    </script>
+</head>
+<body>
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Enter Email">
+    <input type="password" id="password" placeholder="Enter Password">
+    <button onclick="login()">Login</button>
+</body>
+</html>
