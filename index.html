@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Login</title>
-    <script>
-        function login() {
-            var email = document.getElementById("email").value;
-            var password = document.getElementById("password").value;
+  <body>
+    <h1>Login</h1>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
 
-            google.script.run.withSuccessHandler(function(response) {
-                if (response.status === "success") {
-                    sessionStorage.setItem("userEmail", response.email); // Store email
-                    window.location.href = "tickets.html"; // Redirect to tickets page
-                } else {
-                    alert(response.message);
-                }
-            }).loginUser(email, password);
-        }
+    <script>
+      document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        google.script.run.withSuccessHandler(function(response) {
+          if (response === 'success') {
+            window.location.href = `${window.location.origin}${window.location.pathname}?page=tickets&email=${encodeURIComponent(email)}`;
+          } else {
+            alert('Invalid credentials');
+          }
+        }).withFailureHandler(function() {
+          alert('Error occurred');
+        }).validateLogin(email, password);
+      });
     </script>
-</head>
-<body>
-    <h2>Login</h2>
-    <input type="email" id="email" placeholder="Enter Email">
-    <input type="password" id="password" placeholder="Enter Password">
-    <button onclick="login()">Login</button>
-</body>
+  </body>
 </html>
