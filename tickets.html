@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tickets</title>
+    <script>
+        function loadTickets() {
+            var userEmail = sessionStorage.getItem("userEmail");
+            if (!userEmail) {
+                alert("You are not logged in!");
+                window.location.href = "index.html";
+                return;
+            }
+
+            google.script.run.withSuccessHandler(displayTickets).getTickets(userEmail);
+        }
+
+        function displayTickets(data) {
+            var table = "<table border='1'><tr><th>Ticket Number</th><th>Trader ID</th><th>Full Name</th><th>Email</th><th>Comment</th><th>Status</th></tr>";
+            for (var i = 1; i < data.length; i++) {
+                table += "<tr>";
+                for (var j = 0; j < data[i].length; j++) {
+                    table += "<td>" + data[i][j] + "</td>";
+                }
+                table += "</tr>";
+            }
+            table += "</table>";
+            document.getElementById("ticketTable").innerHTML = table;
+        }
+    </script>
+</head>
+<body onload="loadTickets()">
+    <h2>Your Tickets</h2>
+    <div id="ticketTable"></div>
+</body>
+</html>
