@@ -1,35 +1,45 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Tickets</title>
+  <body>
+    <h1>Your Tickets</h1>
+    <table id="ticketsTable">
+      <thead>
+        <tr>
+          <th>Ticket Number</th>
+          <th>Status</th>
+          <th>Comment</th>
+        </tr>
+      </thead>
+      <tbody id="ticketsBody"></tbody>
+    </table>
+
     <script>
-        function loadTickets() {
-            var userEmail = sessionStorage.getItem("userEmail");
-            if (!userEmail) {
-                alert("You are not logged in!");
-                window.location.href = "index.html";
-                return;
-            }
+      function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+          email: decodeURIComponent(params.get('email'))
+        };
+      }
 
-            google.script.run.withSuccessHandler(displayTickets).getTickets(userEmail);
-        }
+      function loadTickets() {
+        const params = getUrlParams();
+        
+        google.script.run.withSuccessHandler(function(tickets) {
+          const tbody = document.getElementById('ticketsBody');
+          tbody.innerHTML = '';
+          
+          tickets.forEach(ticket => {
+            const row = `<tr>
+              <td>${ticket[0]}</td>
+              <td>${ticket[4]}</td>
+              <td>${ticket[3]}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+          });
+        }).getUserTickets(params.email);
+      }
 
-        function displayTickets(data) {
-            var table = "<table border='1'><tr><th>Ticket Number</th><th>Trader ID</th><th>Full Name</th><th>Email</th><th>Comment</th><th>Status</th></tr>";
-            for (var i = 1; i < data.length; i++) {
-                table += "<tr>";
-                for (var j = 0; j < data[i].length; j++) {
-                    table += "<td>" + data[i][j] + "</td>";
-                }
-                table += "</tr>";
-            }
-            table += "</table>";
-            document.getElementById("ticketTable").innerHTML = table;
-        }
+      window.onload = loadTickets;
     </script>
-</head>
-<body onload="loadTickets()">
-    <h2>Your Tickets</h2>
-    <div id="ticketTable"></div>
-</body>
+  </body>
 </html>
